@@ -82,5 +82,14 @@ int main()
   return 0;
 }
 ```
+### Cite Us
+If you use NatOptim for a publication, please cite it as:
+```
+@misc{natoptim,
+  author = "Sasha Vila and Others",
+  title = "NatOptim",
+  howpublished = "\url{http://ceres-solver.org}",
+}
+```
 
 
