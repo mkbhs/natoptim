@@ -1,7 +1,7 @@
 # NatOptim
 ## Nature-Inspired Optimization Library for C++
 
-### Install
+### Installation
 
 Install CMake
 ```
@@ -35,5 +35,52 @@ add_executable(my_project my_project.cpp)
 target_link_libraries(my_project ${NatOptim_LIB})
 ```
 
+### Example using NatOptim Library:
+```
+#include <iostream>
+#include <stdio.h>
+#include <bits/stdc++.h>
+#include "randsearch.h"
+
+using namespace std;
+
+// Define the cost function to be optimized
+double costFunc(double *x)
+{
+  unsigned int n = sizeof(x)/sizeof(x[0]);
+  for(unsigned int i=0; i < n; i++)
+  {
+    double result = 0.0;
+    result = (x[0]*x[0]) + (x[1]*x[1]);
+    return result;
+  }
+}
+
+
+int main()
+{
+  srand(time(0));
+
+  // Define the algorithm's parameters
+  int num_dim = 2;                                      // Search space dimensions
+  double constrains[4] = {-10.0, 10.0, -10.0, 10.0};    // Dimension limits
+  double* ptr_constrains = &constrains[0];
+  int type_sol = 0;                                     // Minimization
+  int max_iter = 500;                                   // Maximum number of iterations
+  double sigma = 5.0;                                   // Standard deviation
+  int num_workers = 30;                                 // Number of solutions per iteration
+
+  // Create a random search optimization problem
+  nptm::RandSearch my_random_search(num_dim, ptr_constrains, type_sol, max_iter, sigma, num_workers);
+
+  // Provide the user defined cost function to the optimization problem
+  my_random_search.cost_func = &costFunc;
+
+  // Run the optimization process
+  my_random_search.optimizeSolution();
+
+  return 0;
+}
+```
 
 
