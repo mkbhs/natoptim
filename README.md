@@ -1,1 +1,2 @@
-# Nature-Inspired Optimization Library for C++
+# NatOptim
+## Nature-Inspired Optimization Library for C++
