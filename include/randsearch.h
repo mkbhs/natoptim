@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // MIT License
 //
 // Copyright (c) 2021 mkbhs
@@ -20,8 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-=======
->>>>>>> 5d6843468c53232e42520d74de677373589ab23d
 
 #pragma once
 #ifndef _RANDSEARCH_H_
@@ -54,19 +51,27 @@ namespace nptm
       void setNumWorkers(int _num_workers);
       int getNumWorkers();
 
+      void setDefFitness(double _def_fitness);
+      double getDefFitness();
+
       double computeCost(double* x);
       void initSolution();
+      void initBestSolution();
       bool checkRangeSolution(double* x);
       void updateSolution();
       void checkBestWorker(int idx_worker, double *x1, double c1, double* x2, double c2);
       void displaySolution(int iter);
-      //void retrieveBestSolution();
+      void retrieveBestSolutionIter(int iter);
+      void retrieveBestSolutionGlobal();
+      void displayGlobalSolution();
       void optimizeSolution();
+
 
       std::function<double(double*)> cost_func;
       vector<double> constrains;
       vector<double> dim_ranges;
       vector<vector<double>> solution;
+      vector<vector<double>> best_solution;
       vector<double> def_solution;
       vector<double> fitness;
 
@@ -77,6 +82,7 @@ namespace nptm
       int max_iter;
       double sigma;
       int num_workers;
+      double def_fitness;
   };
 }
 

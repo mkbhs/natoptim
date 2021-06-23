@@ -60,6 +60,9 @@ namespace nptm
   void RandSearch::setNumWorkers(int _num_workers) { num_workers = _num_workers; }
   int RandSearch::getNumWorkers() { return num_workers; }
 
+  void RandSearch::setDefFitness(double _def_fitness) { def_fitness = _def_fitness; }
+  double RandSearch::getDefFitness() { return def_fitness; }
+
   void RandSearch::setConstrains(double* ptr_constrains)
   {
     for(unsigned int i=0; i < getNumDim()*2; i++)
@@ -68,11 +71,8 @@ namespace nptm
       cout << "constrains[" << i << "] = " << constrains.at(i) << "\t" << endl;
     }
 
-    //cout << "constrains size = " << constrains.size() << endl;
-
     for(unsigned int i=0; i < getNumDim(); i++)
     {
-      //double range_current_dim = ;
       dim_ranges.push_back(constrains.at(2*i+1) - constrains.at(2*i));
       cout << "range in dimension " << i << ": " << dim_ranges.at(i) << "\t" << endl;
     }
@@ -102,7 +102,7 @@ namespace nptm
       def_solution.push_back(0.0);
 
       // init fitness for each worker
-      fitness.push_back(-100000.0);
+      fitness.push_back(100000.0);
 
       // init the solution for each worker
       vector<double> temp;
@@ -114,6 +114,20 @@ namespace nptm
         temp.push_back(distribution(generator)*dim_ranges.at(j) + constrains.at(2*j));
       }
       solution.push_back(temp);
+    }
+  }
+
+  void RandSearch::initBestSolution()
+  {
+    for(unsigned int i=0; i < getMaxIter(); i++)
+    {
+      // init the solution for each iteration
+      vector<double> temp;
+      for(unsigned int j=0; j < getNumDim(); j++)
+      {
+        temp.push_back(0.0);
+      }
+      best_solution.push_back(temp);
     }
   }
 
@@ -154,14 +168,12 @@ namespace nptm
       for(unsigned int i=0; i < getNumDim(); i++)
       {
         solution[idx_worker][i] = x_1[i];
-        //cout << "x[" << i << "] = " << x[i] << endl;
       }
     } else {
       fitness[idx_worker] = c2;
       for(unsigned int i=0; i < getNumDim(); i++)
       {
         solution[idx_worker][i] = x_2[i];
-        //cout << "x[" << i << "] = " << x[i] << endl;
       }
     }
   }
@@ -194,22 +206,83 @@ namespace nptm
   }
 
 
-
-  /*
-  void RandSearch::retrieveBestSolution()
+  void RandSearch::retrieveBestSolutionIter(int iter)
   {
-      for(unsigned int i=0; i < getNumWorkers(); i++)
+    int idx_best_worker = 0;
+    double min_cost = 10000000.0;
+    double current_cost = 0.0;
+    for(unsigned int i=0; i < getNumWorkers(); i++)
+    {
+      double current_worker_solution[getNumDim()] = {0.0};
+      for(unsigned int j=0; j < getNumDim(); j++)
       {
-        for
+        current_worker_solution[j] = solution[i][j];
       }
+      // check the cost
+      current_cost = computeCost(current_worker_solution);
+      if(current_cost < min_cost)
+      {
+        min_cost = current_cost;
+        idx_best_worker = i;
+      }
+    }
+    // update the best solution per iteration with the best worker fitness
+    for(unsigned int i=0; i < getNumDim(); i++)
+    {
+      best_solution[iter][i] = solution[idx_best_worker][i];
+    }
   }
-  */
+
+  void RandSearch::retrieveBestSolutionGlobal()
+  {
+    int idx_min = 0;
+    double min_cost = 10000000.0;
+    double current_cost = 0.0;
+    for(unsigned int i=0; i < getMaxIter(); i++)
+    {
+      double best_solution_iter[getNumDim()] = {0.0};
+      for(unsigned int j=0; j < getNumDim(); j++)
+      {
+        best_solution_iter[j] = best_solution[i][j];
+      }
+      // check the cost
+      current_cost = computeCost(best_solution_iter);
+      if(current_cost < min_cost)
+      {
+        min_cost = current_cost;
+        idx_min = i;
+      }
+    }
+    // update the definitive solution
+    for(unsigned int i=0; i < getNumDim(); i++)
+    {
+      def_solution[i] = best_solution[idx_min][i];
+    }
+    setDefFitness(min_cost);
+  }
+
+  void RandSearch::displayGlobalSolution()
+  {
+    cout << "Best Solution" << endl;
+    for(unsigned int i=0; i < getNumDim(); i++)
+    {
+      cout << "x" << i << "\t";
+    }
+    cout << endl;
+    for(unsigned int i=0; i < getNumDim(); i++)
+    {
+      cout << def_solution[i] << "\t";
+    }
+    cout << endl;
+    cout << "with a cost = " << getDefFitness() << endl;
+  }
+
 
   void RandSearch::optimizeSolution()
   {
     // INITIALIZATION /////////////////////////////////////////////////////////
-    //cout << "initial solution = " << endl;
     initSolution();
+    initBestSolution();
     double x_1[getNumWorkers()][getNumDim()] = {0.0};
     double x_2[getNumWorkers()][getNumDim()] = {0.0};
     double cost_1[getNumWorkers()] ={0.0};
@@ -219,7 +292,6 @@ namespace nptm
       for(unsigned int j=0; j < getNumDim(); j++)
       {
         x_1[i][j] = solution[i][j];
-        //cout << "x_1[" << i << "] = " << x_1[i] << endl;
       }
     }
 
@@ -249,7 +321,6 @@ namespace nptm
         for(unsigned k=0; k < getNumDim(); k++)
         {
           solution[j][k] = x_1[j][k];
-          //cout << "x[" << i << "] = " << x[i] << endl;
         }
       }
 
@@ -260,7 +331,6 @@ namespace nptm
         for(unsigned k=0; k < getNumDim(); k++)
         {
           x_2[j][k] = solution[j][k];
-          //cout << "x_2[" << j << "] = " << x_2[j] << endl;
         }
       }
 
@@ -293,11 +363,16 @@ namespace nptm
         checkBestWorker(j, current_x_1, cost_1[j], current_x_2, cost_2[j]);
       }
 
-      // DISPLAY THE SOLUTIONS FOR EACH ITERATION
-      displaySolution(i);
+      // Display the solutions for each iteration
+      //displaySolution(i);
 
-      // RETRIEVE BEST SOLUTION PER ITERATION
+      // Retrieve the best solution per iteration (from all workers)
+      retrieveBestSolutionIter(i);
 
     } // END OF SEARCH LOOP
+
+    // get the best global solution among all iterations
+    retrieveBestSolutionGlobal();
+    displayGlobalSolution();
   }
 }
