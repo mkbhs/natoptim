@@ -1,6 +1,6 @@
 # NatOptim
 ## Nature-Inspired Optimization Library for C++
-NatOptim is an open source C++ library for solving optimization problems by using nature-inspired algorithms. It can be used to solve non-linear unconstrained optimization problems.
+NatOptim is an open source C++ library for solving optimization problems by using nature-inspired algorithms. It can be used to solve general non-linear unconstrained optimization problems.
 
 ### Installation
 
