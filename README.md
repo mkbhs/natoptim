@@ -33,5 +33,7 @@ include_directories($ENV{HOME}/natoptim/include/)
 add_executable(my_project my_project.cpp)
 
 target_link_libraries(my_project ${NatOptim_LIB})
-``
+```
+
+
 
