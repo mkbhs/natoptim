@@ -15,8 +15,7 @@ $ git clone https://github.com/mkbhs/natoptim.git
 Build NatOptim:
 ```
 $ cd natoptim
-$ mkdir build
-$ cd build
+$ mkdir build && cd build
 $ cmake ..
 $ make
 ```
