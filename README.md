@@ -36,7 +36,7 @@ target_link_libraries(my_project ${NatOptim_LIB})
 ```
 
 ### Example using NatOptim Library:
-```
+```cpp
 #include <iostream>
 #include <stdio.h>
 #include <bits/stdc++.h>
