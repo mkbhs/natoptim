@@ -37,6 +37,7 @@ target_link_libraries(my_project ${NatOptim_LIB})
 ```
 
 ### Example using NatOptim Library:
+The following example implements of simple random search algorithm on a quadratic function of 2 dimensions.
 ```cpp
 #include <iostream>
 #include <stdio.h>
